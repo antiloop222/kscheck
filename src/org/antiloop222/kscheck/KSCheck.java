@@ -90,30 +90,38 @@ public class KSCheck {
         driver.quit();
     }
 
-    private void run() throws IOException, KeyManagementException, NoSuchAlgorithmException, InterruptedException {
+    private void run() {
         int i = 0;
         while(true) {
             System.out.println("Check availability (try " + (++i) + ")...");
-            AvailableServer server = checkKSAvailability();
-            if(server != null) {
-                System.out.println("Found server: " + server);
-                if("fr".equals(server.zone)) {
-                    System.out.println("Starting firefox...");
-                    startFirefox(server);
-                } else {
-                    System.out.println("Ignored server because of inadequate zone");
-                }
+            try {
+                AvailableServer server = checkKSAvailability();
+                if(server != null) {
+                    System.out.println("Found server: " + server);
+                    if("fr".equals(server.zone)) {
+                        System.out.println("Starting firefox...");
+                        startFirefox(server);
+                    } else {
+                        System.out.println("Ignored server because of inadequate zone");
+                    }
 //                orderKSServer(server);
-                break;
-            } else {
-                System.out.println("No server available");
+                    break;
+                } else {
+                    System.out.println("No server available");
+                }
+            } catch(Exception ex) {
+                System.err.println(ex.toString());
             }
             System.out.println("Sleeping 30s...");
-            Thread.sleep(30000);
+            try {
+                Thread.sleep(30000);
+            } catch(InterruptedException iex) {
+                System.err.println(iex.toString());
+            }
         }
     }
 
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, KeyManagementException, InterruptedException {
+    public static void main(String[] args) {
         System.setProperty("webdriver.gecko.driver", "C:\\Program Files\\Mozilla Firefox\\firefox.exe");
         if(args.length > 1) {
             System.setProperty("http.proxyHost", args[0]);
